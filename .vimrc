@@ -103,6 +103,8 @@ let g:vimpager_scrolloff = 0
 " Use 2 space indents in yaml
 autocmd FileType yaml,html.handlebars,markdown setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2
+autocmd FileType java setlocal
+    \ shiftwidth=2 tabstop=2 softtabstop=2 tw=99
 
 set statusline+=%#warningmsg#
 set statusline+=%{SyntasticStatuslineFlag()}
@@ -115,8 +117,8 @@ let g:syntastic_aggregate_errors = 1
 let g:syntastic_python_checkers = ['python', 'pylint']
 
 " Turn on eslint_d for js
-let g:syntastic_javascript_checkers = ['eslint']
-let g:syntastic_javascript_eslint_exec = 'eslint_d'
+let g:syntastic_javascript_checkers = ['jscs']
+" let g:syntastic_javascript_eslint_exec = 'eslint_d'
 
 " pip install vim-vint to install vint
 let g:syntastic_vim_checkers = ['vint']
