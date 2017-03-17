@@ -103,7 +103,7 @@ let g:vimpager_scrolloff = 0
 " Use 2 space indents in yaml
 autocmd FileType yaml,html.handlebars,markdown setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2
-autocmd FileType java setlocal
+autocmd FileType java,scala setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2 tw=99
 
 set statusline+=%#warningmsg#
@@ -129,8 +129,14 @@ let g:syntastic_sh_checkers = ['shellcheck']
 " npm install -g js-yaml
 let g:syntastic_yaml_checkers = ['jsyaml']
 
+let g:syntastic_xml_checkers = ['xmllint']
+
 let g:syntastic_check_on_wq = 0
 let g:syntastic_check_on_open = 1
+
+let g:syntastic_scala_checkers =['scalastyle']
+let g:syntastic_scala_scalastyle_jar = '/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar'
+let g:syntastic_scala_scalastyle_config_file = '/usr/local/etc/scalastyle_config.xml'
 
 function! ToggleSyntastic(buf_path)
     let b:syntastic_mode = 'passive'
@@ -194,5 +200,15 @@ if has('nvim')
     nnoremap <A-k> <C-w>k
     nnoremap <A-l> <C-w>l
 endif
+
+function! CopyMatches(reg)
+  let hits = []
+  %s//\=len(add(hits, submatch(0))) ? submatch(0) : ''/ge
+  let reg = empty(a:reg) ? '+' : a:reg
+  execute 'let @'.reg.' = join(hits, "\n") . "\n"'
+endfunction
+command! -register CopyMatches call CopyMatches(<q-reg>)
+
+set rtp+=/usr/local/opt/fzf
 
 execute pathogen#infect()
