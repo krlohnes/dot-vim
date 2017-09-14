@@ -28,3 +28,10 @@
 [submodule "bundle/fzf"]
 	path = bundle/fzf
 	url = https://github.com/junegunn/fzf.git
+[submodule "vim-scala-auto-import"]
+	path = vim-scala-auto-import
+	url = git@github.com:kalmanb/vim-scala-auto-import.git
+[submodule "bundle/gundo.vim"]
+	path = bundle/gundo.vim
+	url = https://github.com/sjl/gundo.vim
+	branch = master

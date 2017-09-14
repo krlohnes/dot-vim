@@ -16,6 +16,7 @@ set bs=2
 set fo-=t
 set t_Co=256
 set clipboard=unnamedplus
+set tags=tags;/
 
 syntax on
 
@@ -103,7 +104,9 @@ let g:vimpager_scrolloff = 0
 " Use 2 space indents in yaml
 autocmd FileType yaml,html.handlebars,markdown setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2
-autocmd FileType java,scala setlocal
+autocmd FileType java setlocal
+    \ shiftwidth=4 tabstop=4 softtabstop=4 tw=99
+autocmd FileType scala,ruby setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2 tw=99
 
 set statusline+=%#warningmsg#
@@ -131,36 +134,14 @@ let g:syntastic_yaml_checkers = ['jsyaml']
 
 let g:syntastic_xml_checkers = ['xmllint']
 
+let g:syntastic_ruby_exec = ['/usr/bin/ruby']
+
 let g:syntastic_check_on_wq = 0
 let g:syntastic_check_on_open = 1
 
 let g:syntastic_scala_checkers =['scalastyle']
 let g:syntastic_scala_scalastyle_jar = '/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar'
 let g:syntastic_scala_scalastyle_config_file = '/usr/local/etc/scalastyle_config.xml'
-
-function! ToggleSyntastic(buf_path)
-    let b:syntastic_mode = 'passive'
-
-" Syntastic is off by default, this turns it on if a file named
-" '.enable_syntastic' is found in cwd or any ancestor directory
-
-python << EOF
-import vim
-import os.path
-
-current_path = os.path.normpath(vim.eval('a:buf_path'))
-
-while current_path != '/':
-    if os.path.isfile(os.path.join(current_path, '.enable_syntastic')):
-        vim.command('let b:syntastic_mode = "active"')
-        break
-
-    current_path = os.path.normpath(os.path.join(current_path, '..'))
-
-EOF
-endfunction
-
-autocmd BufReadPre * call ToggleSyntastic(expand('%:p:h'))
 
 " Fix airline statuses
 set laststatus=2
@@ -209,6 +190,15 @@ function! CopyMatches(reg)
 endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
 
-set rtp+=/usr/local/opt/fzf
+" In Neovim, you can set up fzf window using a Vim command
+let g:fzf_layout = { 'window': 'enew' }
+let g:fzf_layout = { 'window': '-tabnew' }
+
+let g:fzf_action = {
+  \ 'ctrl-m': 'tabedit',
+  \ 'ctrl-o': 'e',
+  \ 'ctrl-t': 'tabedit',
+  \ 'ctrl-h':  'botright split',
+  \ 'ctrl-v':  'vertical botright split' }
 
 execute pathogen#infect()
