@@ -201,4 +201,11 @@ let g:fzf_action = {
   \ 'ctrl-h':  'botright split',
   \ 'ctrl-v':  'vertical botright split' }
 
+let g:fzf_action = {
+  \ 'ctrl-m': 'tabedit',
+  \ 'ctrl-o': 'e',
+  \ 'ctrl-t': 'tabedit',
+  \ 'ctrl-h':  'botright split',
+  \ 'ctrl-v':  'vertical botright split' }
+
 execute pathogen#infect()
