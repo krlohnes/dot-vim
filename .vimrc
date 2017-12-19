@@ -1,7 +1,6 @@
 " vint: -ProhibitSetNoCompatible
 set nocompatible
 set showmatch
-set esckeys
 set autoindent
 set expandtab
 set tabstop=8
@@ -18,6 +17,8 @@ set t_Co=256
 set clipboard=unnamedplus
 set tags=tags;/
 
+let @t = '%s/\s\+$//e'
+
 syntax on
 
 " Turn off line number underlining
@@ -33,6 +34,10 @@ vnoremap <F9> zf
 " vim isn't left in insert mode after execution
 nnoremap O O<esc>
 nnoremap o o<esc>
+nnoremap ˙ <C-W>h
+nnoremap ∆ <C-W>j
+nnoremap ˚ <C-W>k
+nnoremap ¬ <C-W>l
 
 augroup VimrcColors
 au!
@@ -137,7 +142,7 @@ let g:syntastic_xml_checkers = ['xmllint']
 let g:syntastic_ruby_exec = ['/usr/bin/ruby']
 
 let g:syntastic_check_on_wq = 0
-let g:syntastic_check_on_open = 1
+let g:syntastic_check_on_open = 0
 
 let g:syntastic_scala_checkers =['scalastyle']
 let g:syntastic_scala_scalastyle_jar = '/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar'
