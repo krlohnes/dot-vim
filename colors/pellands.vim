@@ -80,7 +80,7 @@ hi DiffAdd	ctermbg=4
 hi DiffChange	ctermbg=5
 hi DiffDelete	cterm=bold ctermfg=4 ctermbg=6
 hi DiffText	cterm=bold ctermbg=1
-hi Comment	ctermfg=darkblue
+hi Comment	ctermfg=lightblue
 hi Constant	ctermfg=darkred
 hi Special	ctermfg=5
 hi Identifier	ctermfg=6

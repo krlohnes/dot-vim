@@ -127,12 +127,11 @@ omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
 let g:vimpager_scrolloff = 0
 
 " Use 2 space indents in yaml
-autocmd FileType tsx,ts,yaml,html.handlebars,markdown setlocal
-    \ shiftwidth=2 tabstop=2 softtabstop=2
+autocmd FileType tsx,ts,json,yaml,html.handlebars,markdown setlocal
+    \ shiftwidth=2 tabstop=2 softtabstop=2 tw=0
 autocmd FileType java,gradle,groovy setlocal
     \ shiftwidth=4 tabstop=4 softtabstop=4 tw=99
-autocmd FileType java CocDisable
-autocmd FileType scala,ruby,featurejs setlocal
+autocmd FileType scala,ruby,featurejs,pony,wproto setlocal
     \ shiftwidth=2 tabstop=2 softtabstop=2 tw=99
 
 set statusline+=%#warningmsg#
@@ -142,7 +141,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_aggregate_errors = 1
 
 " Turn off flake8
-let g:syntastic_python_checkers = ['python', 'pylint']
+let g:syntastic_python_checkers = ['python3', 'pylint']
 
 " Turn on eslint_d for js
 let g:syntastic_javascript_checkers = ['jscs']
@@ -167,6 +166,7 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_scala_checkers =['scalastyle']
 let g:syntastic_scala_scalastyle_jar = '/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar'
 let g:syntastic_scala_scalastyle_config_file = '/usr/local/etc/scalastyle_config.xml'
+let g:syntastic_pony_checkers = ['currycomb']
 
 " Fix airline statuses
 set laststatus=2
@@ -189,6 +189,9 @@ let g:polyglot_disabled = ['markdown']
 
 " Stop vim-markdown from autofolding markdown on every write
 let g:vim_markdown_folding_disabled = 1
+
+" Turn on deoplete
+let g:deoplete#enable_at_startup = 1
 
 " neovim stuff
 
@@ -233,6 +236,17 @@ let g:fzf_action = {
   \ 'ctrl-h':  'botright split',
   \ 'ctrl-v':  'vertical botright split' }
 
+let g:ale_completion_enabled = 1
+let g:ale_fixers = {'rust': ['rustfmt']}
+let g:ale_linters = {'rust': ['analyzer']}
+let g:ale_rust_analyzer_config = {
+  \ 'rust-analyzer.cargo.loadOutDirsFromCheck': v:true
+  \ }
+
+let g:ale_rust_analyzer_config = {
+  \ 'rust-analyzer.procMacro.enable': v:true
+  \ }
+
 call plug#begin('~/.vim/plugged')
   Plug '/usr/local/opt/fzf'
   Plug 'junegunn/fzf.vim'
@@ -244,6 +258,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'derekwyatt/vim-scala'
   Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-abolish'
+  Plug 'dense-analysis/ale'
 call plug#end()
 
 set statusline+=%{SyntasticStatuslineFlag()}
