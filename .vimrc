@@ -113,6 +113,8 @@ function! CopyMatches(reg)
 endfunction
 command! -register CopyMatches call CopyMatches(<q-reg>)
 
+:command CamelToSnake s#\(\<\u\l\+\|\l\+\)\(\u\)#\l\1_\l\2#g
+
 function! SetTab(n)
     let &shiftwidth=a:n
     let &tabstop=a:n
@@ -127,8 +129,9 @@ omap lp ?^$\\|^\s*\(\\begin\\|\\end\\|\\label\)?1<CR>//-1<CR>.<CR>
 let g:vimpager_scrolloff = 0
 
 " Use 2 space indents in yaml
-autocmd FileType tsx,ts,json,yaml,html.handlebars,markdown setlocal
-    \ shiftwidth=2 tabstop=2 softtabstop=2 tw=0
+autocmd FileType javascript,js,tsx,ts,json,yaml,yml,html.handlebars,markdown setlocal
+    \ shiftwidth=2 tabstop=2 softtabstop=2 tw=99
+autocmd FileType make setlocal noexpandtab
 autocmd FileType java,gradle,groovy setlocal
     \ shiftwidth=4 tabstop=4 softtabstop=4 tw=99
 autocmd FileType scala,ruby,featurejs,pony,wproto setlocal
@@ -192,6 +195,8 @@ let g:vim_markdown_folding_disabled = 1
 
 " Turn on deoplete
 let g:deoplete#enable_at_startup = 1
+
+let g:rustfmt_autosave = 1
 
 " neovim stuff
 
@@ -259,6 +264,7 @@ call plug#begin('~/.vim/plugged')
   Plug 'sheerun/vim-polyglot'
   Plug 'tpope/vim-abolish'
   Plug 'dense-analysis/ale'
+  Plug 'jupyter-vim/jupyter-vim'
 call plug#end()
 
 set statusline+=%{SyntasticStatuslineFlag()}
