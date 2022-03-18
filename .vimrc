@@ -144,7 +144,7 @@ let g:syntastic_always_populate_loc_list = 1
 let g:syntastic_aggregate_errors = 1
 
 " Turn off flake8
-let g:syntastic_python_checkers = ['python3', 'pylint']
+let g:syntastic_python_checkers = ['python3', 'mypy', 'black']
 
 " Turn on eslint_d for js
 let g:syntastic_javascript_checkers = ['jscs']
@@ -247,6 +247,7 @@ let g:ale_linters = {'rust': ['analyzer']}
 let g:ale_rust_analyzer_config = {
   \ 'rust-analyzer.cargo.loadOutDirsFromCheck': v:true
   \ }
+set omnifunc=ale#completion#OmniFunc
 
 let g:ale_rust_analyzer_config = {
   \ 'rust-analyzer.procMacro.enable': v:true
