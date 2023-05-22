@@ -32,6 +32,13 @@ nnoremap <F9> za
 onoremap <F9> <C-C>za
 vnoremap <F9> zf
 
+" ALE shortcuts
+nnoremap <F2> :ALEGoToDefinition<CR>
+" S-F2 == F14
+nnoremap <F14> :ALEGoToDefinition -tab<CR>
+nnoremap <F3> :ALEFindReferences<CR>
+nnoremap <F15> :ALEFindReferences -tab<CR>
+
 " Remap O and o (Insert newline before and newline after) so that
 " vim isn't left in insert mode after execution
 nnoremap O O<esc>
@@ -198,6 +205,8 @@ let g:deoplete#enable_at_startup = 1
 
 let g:rustfmt_autosave = 1
 
+let g:OmniSharp_selector_ui = 'fzf' 
+
 " neovim stuff
 
 if has('nvim')
@@ -242,8 +251,11 @@ let g:fzf_action = {
   \ 'ctrl-v':  'vertical botright split' }
 
 let g:ale_completion_enabled = 1
+let g:ale_completion_autoimport = 1
+let g:ale_java_eclipselsp_path = '/opt/homebrew/Cellar/jdtls/1.19.0'
+let g:ale_java_eclipselsp_executable = '/opt/homebrew/opt/openjdk@19/bin/java'
 let g:ale_fixers = {'rust': ['rustfmt']}
-let g:ale_linters = {'rust': ['analyzer']}
+let g:ale_linters = {'rust': ['analyzer'], 'go': ['gofmt', 'golint', 'go vet', 'gopls', 'errcheck'], 'java': ['eclipselsp'], 'cs': ['OmniSharp']}
 let g:ale_rust_analyzer_config = {
   \ 'rust-analyzer.cargo.loadOutDirsFromCheck': v:true
   \ }
@@ -253,9 +265,53 @@ let g:ale_rust_analyzer_config = {
   \ 'rust-analyzer.procMacro.enable': v:true
   \ }
 
+function! MaybeSetGoPackagesDriver()
+  " Start at the current directory and see if there's a WORKSPACE file in the
+  " current directory or any parent. If we find one, check if there's a
+  " gopackagesdriver.sh in a tools/ directory, and point our
+  " GOPACKAGESDRIVER env var at it.
+  let l:dir = getcwd()
+  while l:dir != "/"
+    if filereadable(simplify(join([l:dir, 'WORKSPACE'], '/')))
+      let l:maybe_driver_path = simplify(join([l:dir, 'tools/go-packages-driver.sh'], '/'))
+      if filereadable(l:maybe_driver_path)
+        let $GOPACKAGESDRIVER = l:maybe_driver_path
+        break
+      end
+    end
+    let l:dir = fnamemodify(l:dir, ':h')
+  endwhile
+endfunction
+
+call MaybeSetGoPackagesDriver()
+
+let g:go_gopls_local = '"github.com/txlayer/txlayer","github.com/pnwcode/pnwcode"'
+
+" See https://github.com/golang/tools/blob/master/gopls/doc/settings.md
+let g:go_gopls_settings = {
+  \ 'build.directoryFilters': [
+    \ '-bazel-bin',
+    \ '-bazel-out',
+    \ '-bazel-testlogs',
+    \ '-bazel-txlayer',
+  \ ],
+  \ 'ui.completion.usePlaceholders': v:true,
+  \ 'ui.semanticTokens': v:true,
+  \ 'ui.codelenses': {
+    \ 'gc_details': v:false,
+    \ 'regenerate_cgo': v:false,
+    \ 'generate': v:false,
+    \ 'test': v:false,
+    \ 'tidy': v:false,
+    \ 'upgrade_dependency': v:false,
+    \ 'vendor': v:false,
+  \ },
+\ }
+
 call plug#begin('~/.vim/plugged')
   Plug '/usr/local/opt/fzf'
   Plug 'junegunn/fzf.vim'
+  Plug 'junegunn/fzf'
   Plug 'vim-syntastic/syntastic'
   Plug 'vim-airline/vim-airline'
   Plug 'vim-airline/vim-airline-themes'
@@ -266,6 +322,11 @@ call plug#begin('~/.vim/plugged')
   Plug 'tpope/vim-abolish'
   Plug 'dense-analysis/ale'
   Plug 'jupyter-vim/jupyter-vim'
+  Plug 'tweekmonster/gofmt.vim'
+  Plug 'godlygeek/tabular'
+  Plug 'preservim/vim-markdown'
+  Plug 'OmniSharp/omnisharp-vim'
 call plug#end()
+
 
 set statusline+=%{SyntasticStatuslineFlag()}
