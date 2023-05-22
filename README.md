@@ -1,4 +1,4 @@
-# Matt's vim Setup
+# ~Matt's~ Keith's vim Setup
 
 I've decided to make my .vim directory public, so I figured I should at least
 make an attempt at documenting my setup. Before I start, the standard
