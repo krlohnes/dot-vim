@@ -106,7 +106,7 @@ I'm 30. If you don't want to go through the effort of installing a custom font,
 I at least recommend using a monospaced font. Bitstream Vera Mono is a great
 choice and is present on most systems by default.
 
-I use [Pathogen](https://github.com/tpope/vim-pathogen) to manage the following
+I use [Plug](https://github.com/junegunn/vim-plug) to manage the following
 plugins, which I've found to be the right combination of helpfulness without
 trying to make vim into an IDE, because, as a
 [great man](http://c.learncodethehardway.org/book/ex0.html) once said, "An IDE,
@@ -119,9 +119,11 @@ trying to make vim into an IDE, because, as a
 - [vim-markdown](https://github.com/plasticboy/vim-markdown)
   - because tpope/vim-markdown sucks
 
+`:PlugInstall` to install the appropriate plugins
+
 ### Neovim
 
-I recently started using [Neovim](https://github.com/neovim/neovim) part time
+I recently started using [Neovim](https://github.com/neovim/neovim) full time
 because terminal buffers are amazing. My `.vim` is shareable between both `vim`
 and `neovim` so everything above still applies.
 
