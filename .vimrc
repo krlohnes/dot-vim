@@ -250,15 +250,12 @@ let g:fzf_action = {
   \ 'ctrl-h':  'botright split',
   \ 'ctrl-v':  'vertical botright split' }
 
-let g:ale_completion_enabled = 1
-let g:ale_completion_autoimport = 1
 let g:ale_java_eclipselsp_path = '/opt/homebrew/Cellar/jdtls/1.19.0'
 let g:ale_java_eclipselsp_executable = '/opt/homebrew/opt/openjdk@19/bin/java'
+let g:ale_completion_enabled = 1
+let g:ale_completion_autoimport = 1
 let g:ale_fixers = {'rust': ['rustfmt']}
-let g:ale_linters = {'rust': ['analyzer'], 'go': ['gofmt', 'golint', 'go vet', 'gopls', 'errcheck'], 'java': ['eclipselsp'], 'cs': ['OmniSharp']}
-let g:ale_rust_analyzer_config = {
-  \ 'rust-analyzer.cargo.loadOutDirsFromCheck': v:true
-  \ }
+let g:ale_linters = {'rust': ['analyzer', 'clippy'], 'go': ['gofmt', 'golint', 'go vet', 'gopls', 'errcheck'], 'java': ['eclipselsp'], 'cs': ['OmniSharp']}
 set omnifunc=ale#completion#OmniFunc
 
 let g:ale_rust_analyzer_config = {
