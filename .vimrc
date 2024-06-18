@@ -83,9 +83,6 @@ endfunction
 
 function! GoErrFill(num)
     let num = a:num
-    if num is v:null
-        let num = 0
-    endif
     let line = []
     while num >= 0
         if num == 0
