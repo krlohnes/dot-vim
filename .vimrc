@@ -15,7 +15,7 @@ set hlsearch
 set bs=2
 set fo-=t
 set t_Co=256
-set clipboard=unnamedplus
+set clipboard+=unnamedplus
 set tags=tags;/
 set foldmethod=manual
 
@@ -80,6 +80,29 @@ function! HighlightWSErrors(hl_on)
         endif
     endif
 endfunction
+
+function! GoErrFill(num)
+    let num = a:num
+    if num is v:null
+        let num = 0
+    endif
+    let line = []
+    while num >= 0
+        if num == 0
+            call add(line, 'err')
+        else
+            call add(line, 'nil')
+        endif
+        let num -= 1
+    endwhile
+    call append('.', repeat(' ', indent('.')))
+    call append('.', repeat(' ', indent('.')) . '}')
+    call append('.', repeat(' ', indent('.')) . '   return ' . join(line, ', '))
+    call append('.', repeat(' ', indent('.')) . 'if err != nil {')
+endfunction
+
+command! -bar -nargs=1 GoErr
+  \ call GoErrFill(<q-args>)
 
 function! ToggleHighlightWSErrors()
     let t:highlight_ws_errors = exists('t:highlight_ws_errors') ?
@@ -164,7 +187,7 @@ let g:syntastic_vim_checkers = ['vint']
 let g:syntastic_sh_checkers = ['shellcheck']
 
 " npm install -g js-yaml
-let g:syntastic_yaml_checkers = ['jsyaml']
+let g:syntastic_yaml_checkers = ['jsyaml', 'yamllint']
 
 let g:syntastic_xml_checkers = ['xmllint']
 
@@ -176,13 +199,11 @@ let g:syntastic_check_on_open = 0
 let g:syntastic_scala_checkers =['scalastyle']
 let g:syntastic_scala_scalastyle_jar = '/usr/local/Cellar/scalastyle/0.8.0/libexec/scalastyle_2.11-0.8.0-batch.jar'
 let g:syntastic_scala_scalastyle_config_file = '/usr/local/etc/scalastyle_config.xml'
-let g:syntastic_pony_checkers = ['currycomb']
-
 " Fix airline statuses
 set laststatus=2
 
 " Use powerlineish theme with powerline hacked fonts
-let g:airline_powerline_fonts = 1
+let g:airline_powerline_fonts = 0
 let g:airline_theme='powerlineish'
 
 " Enable Airline integration with fugitive
@@ -205,7 +226,7 @@ let g:deoplete#enable_at_startup = 1
 
 let g:rustfmt_autosave = 1
 
-let g:OmniSharp_selector_ui = 'fzf' 
+let g:OmniSharp_selector_ui = 'fzf'
 
 " neovim stuff
 
@@ -254,9 +275,12 @@ let g:ale_java_eclipselsp_path = '/opt/homebrew/Cellar/jdtls/1.19.0'
 let g:ale_java_eclipselsp_executable = '/opt/homebrew/opt/openjdk@19/bin/java'
 let g:ale_completion_enabled = 1
 let g:ale_completion_autoimport = 1
+let g:ale_keep_list_window_open = 0
 let g:ale_fixers = {'rust': ['rustfmt']}
-let g:ale_linters = {'rust': ['analyzer', 'clippy'], 'go': ['gofmt', 'golint', 'go vet', 'gopls', 'errcheck'], 'java': ['eclipselsp'], 'cs': ['OmniSharp']}
+let g:ale_linters = {'rust': ['analyzer', 'clippy'], 'go': ['gofmt', 'golint', 'go vet', 'gopls', 'errcheck'], 'java': ['eclipselsp'], 'cs': ['OmniSharp'], 'proto': ['protolint']}
 set omnifunc=ale#completion#OmniFunc
+
+let g:go_fmt_command = "goimports"
 
 let g:ale_rust_analyzer_config = {
   \ 'rust-analyzer.procMacro.enable': v:true
@@ -282,29 +306,6 @@ endfunction
 
 call MaybeSetGoPackagesDriver()
 
-let g:go_gopls_local = '"github.com/txlayer/txlayer","github.com/pnwcode/pnwcode"'
-
-" See https://github.com/golang/tools/blob/master/gopls/doc/settings.md
-let g:go_gopls_settings = {
-  \ 'build.directoryFilters': [
-    \ '-bazel-bin',
-    \ '-bazel-out',
-    \ '-bazel-testlogs',
-    \ '-bazel-txlayer',
-  \ ],
-  \ 'ui.completion.usePlaceholders': v:true,
-  \ 'ui.semanticTokens': v:true,
-  \ 'ui.codelenses': {
-    \ 'gc_details': v:false,
-    \ 'regenerate_cgo': v:false,
-    \ 'generate': v:false,
-    \ 'test': v:false,
-    \ 'tidy': v:false,
-    \ 'upgrade_dependency': v:false,
-    \ 'vendor': v:false,
-  \ },
-\ }
-
 call plug#begin('~/.vim/plugged')
   Plug '/usr/local/opt/fzf'
   Plug 'junegunn/fzf.vim'
@@ -323,7 +324,9 @@ call plug#begin('~/.vim/plugged')
   Plug 'godlygeek/tabular'
   Plug 'preservim/vim-markdown'
   Plug 'OmniSharp/omnisharp-vim'
+  Plug 'arthurxavierx/vim-caser'
 call plug#end()
 
 
 set statusline+=%{SyntasticStatuslineFlag()}
+e
