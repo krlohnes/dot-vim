@@ -14,8 +14,8 @@ M.colors = function(colors)
     colors.main.orange = '#f78c6c'
     colors.main.pink = '#ff9cac'
 
-    colors.editor.bg = '#000000'
-    colors.editor.bg_alt = '#1a1a1a'
+    colors.editor.bg = '#1a1a1a'
+    colors.editor.bg_alt = '#2a2a2a'
     colors.editor.fg = '#b0bec5'
     colors.editor.text = '#727272'
     colors.editor.comments = '#616161'

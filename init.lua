@@ -233,7 +233,8 @@ vim.api.nvim_create_autocmd(
         end
     }
 )
-local fzf_layout = {}
-fzf_layout["window"] = "-tabnew"
-vim.g.fzf_layout = fzf_layout
+vim.g.fzf_layout = {
+    window = '-tabnew'
+}
+vim.g.fzf_action = { enter = 'tab split' }
 
