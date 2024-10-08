@@ -183,6 +183,9 @@ paq({'glench/vim-jinja2-syntax'})
 paq({'nvim-lua/popup.nvim'})
 paq({'nvim-lua/plenary.nvim'})
 paq({'nvim-telescope/telescope.nvim'})
+paq({'/usr/local/opt/fzf'})
+paq({'junegunn/fzf.vim'})
+paq({'junegunn/fzf'})
 
 -- miscellaneous
 vim.g.vimpager_scrolloff = 0
