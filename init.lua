@@ -160,7 +160,6 @@ lspconfig.clangd.setup({
         '--limit-references=20000'
     }
 })
-lspconfig.rust_analyzer.setup({})
 
 vim.g.ale_linters_explicit = 1
 vim.g.ale_linters = {
@@ -169,8 +168,21 @@ vim.g.ale_linters = {
     markdown = {'mdl'},  -- `gem install --user mdl`
     sh = {'shellcheck'},  -- `cabal update; cabal install --installdir=${HOME}/.local/bin ShellCheck`
     yaml = {'yamllint'},  -- `pipx install yamllint`
-    python = {'pylint'}  -- `pipx install pylint`
+    python = {'pylint'},  -- `pipx install pylint`
+    proto = {'buf'},
+    rust = {'analyzer'}
 }
+vim.g.ale_completion_autoimport = 1
+vim.g.ale_keep_list_window_open = 0
+vim.g.ale_fixers = {rust = {'rustfmt'}}
+vim.g.ale_rust_analyzer_config = {
+  ["analyzer"] = {
+      procMacro = {
+        enable = true
+    }
+  }
+}
+vim.bo.omnifunc="ale#completion#OmniFunc"
 vim.g.ale_sh_shellcheck_options = '-x'
 vim.g.ale_sh_shellcheck_change_directory = 0
 paq({'w0rp/ale'})
@@ -221,3 +233,7 @@ vim.api.nvim_create_autocmd(
         end
     }
 )
+local fzf_layout = {}
+fzf_layout["window"] = "-tabnew"
+vim.g.fzf_layout = fzf_layout
+
