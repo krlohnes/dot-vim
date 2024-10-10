@@ -58,12 +58,22 @@ vim.o.spelllang = 'en_us'
 vim.api.nvim_set_keymap('n', 'O', 'O<esc>', {noremap = true})
 vim.api.nvim_set_keymap('n', 'o', 'o<esc>', {noremap = true})
 
+---- remap C-n to manual completion
+vim.api.nvim_set_keymap('n', '<C-n>', '<C-X><C-O>', {noremap = true})
+
+---- map C-R to rename
+
 -- disable unused providers to speed up start up
 vim.g.loaded_ruby_provider = 0
 vim.g.loaded_python_provider = 0
 vim.g.loaded_python3_provider = 0
 vim.g.loaded_perl_provider = 0
 vim.g.loaded_node_provider = 0
+
+--Remap Jump To Tag
+vim.keymap.set("n", "<F2>", "<C-]>", { noremap = true })
+vim.keymap.set("n", "<F14>", "<C-w><C-]><C-w>T", { noremap = true, silent = true })
+vim.keymap.set('n', '<F4>', vim.lsp.buf.rename, {noremap = true})
 
 -- plugins
 vim.cmd('packadd paq-nvim')
@@ -161,6 +171,7 @@ lspconfig.clangd.setup({
     }
 })
 
+paq({'w0rp/ale'})
 vim.g.ale_linters_explicit = 1
 vim.g.ale_linters = {
     cpp = {'cpplint'},  -- `pipx install cpplint`
@@ -172,21 +183,10 @@ vim.g.ale_linters = {
     proto = {'buf'},
     rust = {'analyzer'}
 }
-vim.g.ale_completion_autoimport = 1
-vim.g.ale_keep_list_window_open = 0
-vim.g.ale_fixers = {rust = {'rustfmt'}}
-vim.g.ale_rust_analyzer_config = {
-  ["analyzer"] = {
-      procMacro = {
-        enable = true
-    }
-  }
-}
-vim.bo.omnifunc="ale#completion#OmniFunc"
-vim.g.ale_sh_shellcheck_options = '-x'
-vim.g.ale_sh_shellcheck_change_directory = 0
-paq({'w0rp/ale'})
 
+lspconfig.rust_analyzer.setup({})
+
+paq({'hrsh7th/nvim-cmp'})
 paq({'tpope/vim-fugitive'})
 paq({'godlygeek/tabular'})
 paq({'martinda/Jenkinsfile-vim-syntax'})
@@ -238,3 +238,66 @@ vim.g.fzf_layout = {
 }
 vim.g.fzf_action = { enter = 'tab split' }
 
+paq({'hrsh7th/nvim-cmp'})
+paq({'hrsh7th/cmp-nvim-lsp'})
+paq({'saadparwaiz1/cmp_luasnip'})
+paq({'L3MON4D3/LuaSnip'})
+
+-- Add additional capabilities supported by nvim-cmp
+local capabilities = require("cmp_nvim_lsp").default_capabilities()
+
+local lspconfig = require('lspconfig')
+
+-- Enable some language servers with the additional completion capabilities offered by nvim-cmp
+local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'gopls' }
+for _, lsp in ipairs(servers) do
+  lspconfig[lsp].setup {
+    -- on_attach = my_custom_on_attach,
+    capabilities = capabilities,
+  }
+end
+
+-- luasnip setup
+local luasnip = require 'luasnip'
+
+-- nvim-cmp setup
+local cmp = require 'cmp'
+cmp.setup {
+  snippet = {
+    expand = function(args)
+      luasnip.lsp_expand(args.body)
+    end,
+  },
+  mapping = cmp.mapping.preset.insert({
+    ['<C-u>'] = cmp.mapping.scroll_docs(-4), -- Up
+    ['<C-d>'] = cmp.mapping.scroll_docs(4), -- Down
+    -- C-b (back) C-f (forward) for snippet placeholder navigation.
+    ['<C-Space>'] = cmp.mapping.complete(),
+    ['<CR>'] = cmp.mapping.confirm {
+      behavior = cmp.ConfirmBehavior.Replace,
+      select = true,
+    },
+    ['<Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_next_item()
+      elseif luasnip.expand_or_jumpable() then
+        luasnip.expand_or_jump()
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+    ['<S-Tab>'] = cmp.mapping(function(fallback)
+      if cmp.visible() then
+        cmp.select_prev_item()
+      elseif luasnip.jumpable(-1) then
+        luasnip.jump(-1)
+      else
+        fallback()
+      end
+    end, { 'i', 's' }),
+  }),
+  sources = {
+    { name = 'nvim_lsp' },
+    { name = 'luasnip' },
+  },
+}
