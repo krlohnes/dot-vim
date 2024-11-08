@@ -72,8 +72,12 @@ vim.g.loaded_node_provider = 0
 
 --Remap Jump To Tag
 vim.keymap.set("n", "<F2>", "<C-]>", { noremap = true })
+vim.keymap.set("n", "<F3>", "<cmd>Telescope lsp_references<cr>", { noremap = true })
 vim.keymap.set("n", "<F14>", "<C-w><C-]><C-w>T", { noremap = true, silent = true })
 vim.keymap.set('n', '<F4>', vim.lsp.buf.rename, {noremap = true})
+
+vim.fn.setreg('t', "%s/\\s\\+$//e")
+
 
 -- plugins
 vim.cmd('packadd paq-nvim')
@@ -157,6 +161,8 @@ require('lualine').setup({
     }
 })
 
+paq({'lukas-reineke/lsp-format.nvim'})
+
 local default_parallelism = vim.uv.available_parallelism()
 
 paq({'neovim/nvim-lspconfig'})
@@ -181,10 +187,33 @@ vim.g.ale_linters = {
     yaml = {'yamllint'},  -- `pipx install yamllint`
     python = {'pylint'},  -- `pipx install pylint`
     proto = {'buf'},
-    rust = {'analyzer'}
+    rust = {'analyzer'},
+    go = {'staticcheck'},
 }
 
-lspconfig.rust_analyzer.setup({})
+lspconfig.rust_analyzer.setup({
+    on_attach = require("lsp-format").on_attach,
+    settings = {
+      ['rust-analyzer'] = {
+         cargo = {
+            buildscripts = {
+                enable = true,
+            },
+            procMacro = {
+                enable = true,
+            },
+         }
+      }
+   }
+})
+
+lspconfig.gopls.setup({
+    settings = {
+        gopls = {
+            staticcheck = true
+        }
+    }
+})
 
 paq({'hrsh7th/nvim-cmp'})
 paq({'tpope/vim-fugitive'})
@@ -252,10 +281,18 @@ local lspconfig = require('lspconfig')
 local servers = { 'clangd', 'rust_analyzer', 'pyright', 'ts_ls', 'gopls' }
 for _, lsp in ipairs(servers) do
   lspconfig[lsp].setup {
-    -- on_attach = my_custom_on_attach,
     capabilities = capabilities,
   }
 end
+
+-- Format before save
+vim.api.nvim_create_augroup('AutoFormatting', {})
+vim.api.nvim_create_autocmd('BufWritePre', {
+  group = 'AutoFormatting',
+  callback = function()
+    vim.lsp.buf.format()
+  end,
+})
 
 -- luasnip setup
 local luasnip = require 'luasnip'
