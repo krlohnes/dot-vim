@@ -5,7 +5,17 @@ vim.o.secure = true  -- disallow local rc exec
 -- tab / whitespace control
 vim.o.expandtab = true  -- expand hard tabs to spaces
 vim.o.softtabstop = 4  -- expand tabs to 4 spaces
-vim.o.tabstop = 8  -- use 8 spaces for hard tabs
+vim.o.tabstop = 4  -- use 4 spaces for hard tabs
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "go",
+	command = "setlocal noexpandtab tabstop=4"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "proto",
+	command = "setlocal softtabstop=4 shiftwidth=4 tabstop=4"
+})
 
 -- formatting options
 vim.o.autoindent = true
@@ -149,6 +159,20 @@ require('material').setup({
     style = 'darker'
 })
 vim.cmd([[colorscheme material]])
+paq({"pmizio/typescript-tools.nvim"})
+require("typescript-tools").setup ({
+    on_attach =
+        function(client, bufnr)
+            client.server_capabilities.documentFormattingProvider = false
+            client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+    settings = {
+            jsx_close_tag = {
+            enable = true,
+            filetypes = { "javascriptreact", "typescriptreact" },
+        }
+    }
+})
 
 paq({'kyazdani42/nvim-web-devicons', opt = true})
 paq({'nvim-lualine/lualine.nvim'})
@@ -161,6 +185,7 @@ require('lualine').setup({
     }
 })
 
+paq({'lukas-reineke/lsp-format.nvim'})
 paq({'lukas-reineke/lsp-format.nvim'})
 
 local default_parallelism = vim.uv.available_parallelism()
@@ -186,6 +211,8 @@ vim.g.ale_linters = {
     sh = {'shellcheck'},  -- `cabal update; cabal install --installdir=${HOME}/.local/bin ShellCheck`
     yaml = {'yamllint'},  -- `pipx install yamllint`
     python = {'pylint'},  -- `pipx install pylint`
+    javascript = {'prettier'},
+    typescript = {'prettier'},
     proto = {'buf'},
     rust = {'analyzer'},
     go = {'staticcheck'},
@@ -271,6 +298,7 @@ paq({'hrsh7th/nvim-cmp'})
 paq({'hrsh7th/cmp-nvim-lsp'})
 paq({'saadparwaiz1/cmp_luasnip'})
 paq({'L3MON4D3/LuaSnip'})
+paq({'tpope/vim-abolish'})
 
 -- Add additional capabilities supported by nvim-cmp
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
