@@ -14,7 +14,12 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "proto",
-	command = "setlocal softtabstop=4 shiftwidth=4 tabstop=4"
+	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = {"typescript,typescriptreact,javascript"},
+	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
 })
 
 -- formatting options
@@ -167,7 +172,7 @@ require("typescript-tools").setup ({
             client.server_capabilities.documentRangeFormattingProvider = false
         end,
     settings = {
-            jsx_close_tag = {
+        jsx_close_tag = {
             enable = true,
             filetypes = { "javascriptreact", "typescriptreact" },
         }
