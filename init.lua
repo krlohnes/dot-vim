@@ -10,6 +10,26 @@ vim.o.expandtab = true  -- expand hard tabs to spaces
 vim.o.softtabstop = 4  -- expand tabs to 4 spaces
 vim.o.tabstop = 8  -- use 8 spaces for hard tabs
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "go",
+	command = "setlocal noexpandtab tabstop=4"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "sql",
+	command = "setlocal noexpandtab tabstop=4"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "proto",
+	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = {"typescript,typescriptreact,javascript,lua"},
+	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
+})
+
 -- formatting options
 vim.o.autoindent = true
 vim.o.shiftwidth = 4
@@ -60,6 +80,22 @@ vim.o.spelllang = 'en_us'
 ---- remap O and o to not leave things in insert mode
 vim.api.nvim_set_keymap('n', 'O', 'O<esc>', {noremap = true})
 vim.api.nvim_set_keymap('n', 'o', 'o<esc>', {noremap = true})
+
+---- remap C-n to manual completion
+vim.api.nvim_set_keymap('n', '<C-n>', '<C-X><C-O>', {noremap = true})
+
+-- Use ctrl-[hjkl] to select the active split
+vim.api.nvim_set_keymap('n', '<C-k>', ':wincmd k<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-j>', ':wincmd j<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-h>', ':wincmd h<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-l>', ':wincmd l<CR>', { noremap = true, silent = true })
+
+-- Remap some lsp functions so I don't have to relearn shortcuts
+vim.keymap.set("n", "<F2>", "<C-]>", { noremap = true })
+vim.keymap.set("n", "<F3>", "<cmd>Telescope lsp_references<cr>", { noremap = true })
+vim.keymap.set("n", "<F14>", "<C-w><C-]><C-w>T", { noremap = true, silent = true })
+vim.keymap.set('n', '<F4>', vim.lsp.buf.rename, {noremap = true})
+vim.keymap.set('n', '<F5>', vim.diagnostic.open_float, {noremap = true})
 
 -- disable unused providers to speed up start up
 vim.g.loaded_ruby_provider = 0

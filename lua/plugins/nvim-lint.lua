@@ -25,7 +25,7 @@ return {
             sh = { 'shellcheck' },  -- `cabal update; cabal install --installdir=${HOME}/.local/bin ShellCheck`
             yaml = { 'yamllint' },  -- `pipx install yamllint`
             python = { 'pylint', 'vale' },  -- `pipx install pylint`
-            rust = { 'vale' },
+            rust = { 'clippy' },
             zsh = { 'shellcheck', 'zsh' }
         },
         linters =  {
