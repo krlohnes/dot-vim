@@ -13,12 +13,17 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 vim.api.nvim_create_autocmd("FileType", {
+	pattern = "sql",
+	command = "setlocal noexpandtab tabstop=4"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
 	pattern = "proto",
 	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
 })
 
 vim.api.nvim_create_autocmd("FileType", {
-	pattern = {"typescript,typescriptreact,javascript"},
+	pattern = {"typescript,typescriptreact,javascript,lua"},
 	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
 })
 
@@ -76,6 +81,12 @@ vim.api.nvim_set_keymap('n', 'o', 'o<esc>', {noremap = true})
 ---- remap C-n to manual completion
 vim.api.nvim_set_keymap('n', '<C-n>', '<C-X><C-O>', {noremap = true})
 
+-- Use ctrl-[hjkl] to select the active split
+vim.api.nvim_set_keymap('n', '<C-k>', ':wincmd k<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-j>', ':wincmd j<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-h>', ':wincmd h<CR>', { noremap = true, silent = true })
+vim.api.nvim_set_keymap('n', '<C-l>', ':wincmd l<CR>', { noremap = true, silent = true })
+
 ---- map C-R to rename
 
 -- disable unused providers to speed up start up
@@ -90,6 +101,7 @@ vim.keymap.set("n", "<F2>", "<C-]>", { noremap = true })
 vim.keymap.set("n", "<F3>", "<cmd>Telescope lsp_references<cr>", { noremap = true })
 vim.keymap.set("n", "<F14>", "<C-w><C-]><C-w>T", { noremap = true, silent = true })
 vim.keymap.set('n', '<F4>', vim.lsp.buf.rename, {noremap = true})
+vim.keymap.set('n', '<F5>', vim.diagnostic.open_float, {noremap = true})
 
 vim.fn.setreg('t', "%s/\\s\\+$//e")
 
@@ -98,7 +110,7 @@ vim.fn.setreg('t', "%s/\\s\\+$//e")
 vim.cmd('packadd paq-nvim')
 local paq = require('paq').paq
 
-paq({'savq/paq-nvim', opt = true})
+paq({'savq/paq-nvim', opt=true})
 
 paq({'nvim-treesitter/nvim-treesitter'})
 require('nvim-treesitter.configs').setup({
@@ -185,12 +197,11 @@ require('lualine').setup({
     options = {theme = 'material'},
     sections = {
         lualine_y = {
-            {'diagnostics', sources = {'nvim_diagnostic', 'ale'}}
+            {'diagnostics', sources = {'nvim_diagnostic'}}
         }
     }
 })
 
-paq({'lukas-reineke/lsp-format.nvim'})
 paq({'lukas-reineke/lsp-format.nvim'})
 
 local default_parallelism = vim.uv.available_parallelism()
@@ -207,22 +218,6 @@ lspconfig.clangd.setup({
     }
 })
 
-paq({'w0rp/ale'})
-vim.g.ale_linters_explicit = 1
-vim.g.ale_linters = {
-    cpp = {'cpplint'},  -- `pipx install cpplint`
-    gitcommit = {'gitlint'},  -- `pipx install --include-deps gitlint`
-    markdown = {'mdl'},  -- `gem install --user mdl`
-    sh = {'shellcheck'},  -- `cabal update; cabal install --installdir=${HOME}/.local/bin ShellCheck`
-    yaml = {'yamllint'},  -- `pipx install yamllint`
-    python = {'pylint'},  -- `pipx install pylint`
-    javascript = {'prettier'},
-    typescript = {'prettier'},
-    proto = {'buf'},
-    rust = {'analyzer'},
-    go = {'staticcheck'},
-}
-
 lspconfig.rust_analyzer.setup({
     on_attach = require("lsp-format").on_attach,
     settings = {
@@ -234,8 +229,15 @@ lspconfig.rust_analyzer.setup({
             procMacro = {
                 enable = true,
             },
-         }
-      }
+         },
+         diagnostics = {
+           enabled = true,
+           refreshSupport = true,
+         },
+         check = {
+           command = "clippy",
+         },
+      },
    }
 })
 
@@ -305,6 +307,8 @@ paq({'saadparwaiz1/cmp_luasnip'})
 paq({'L3MON4D3/LuaSnip'})
 paq({'tpope/vim-abolish'})
 
+paq({'b0o/schemastore.nvim'})
+
 -- Add additional capabilities supported by nvim-cmp
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
@@ -317,6 +321,56 @@ for _, lsp in ipairs(servers) do
     capabilities = capabilities,
   }
 end
+
+capabilities.textDocument.completion.completionItem.snippetSupport = true
+lspconfig.jsonls.setup {
+  capabilities = capabilities,
+  settings = {
+    json = {
+      schemas = require('schemastore').json.schemas({
+        select = {"rssdconfig.json", "rssdrules.json", "rssar.json"},
+        extra = {
+          {
+            description = "RunSecurity Sensitive Data Rules Schema",
+            fileMatch = {"rssdrules.json", "*.rssdrules.json"},
+            name = "rssdrules.json",
+            url = "/home/keith/projects/runsecurity/analyzer/resource/sensitive_data_rules/sensitive_data_rules_schema.json",
+          },
+          {
+            description = "RunSecurity Sensitive Data Rule Configuration Schema",
+            fileMatch = {"rssdconfig.json", "*.rssdconfig.json"},
+            name = "rssdconfig.json",
+            url = "/home/keith/projects/runesecurity/analyzer/resource/sensitive_data_rules/sensitive_data_config_schema.json",
+
+          },
+          {
+            description = "RunSecurity Api Analyzer Rules",
+            fileMatch = {"rssar.json", "*.rssar.json"},
+            name = "rssar.json",
+            url = "/home/keith/projects/runsecurity/analyzer/resource/api_analyzer_rules/api_analyzer_rules_schema.json",
+
+          },
+        }
+      }),
+      validate = { enable = true },
+    },
+  },
+}
+
+require('lspconfig').yamlls.setup {
+  settings = {
+    yaml = {
+      schemaStore = {
+        -- You must disable built-in schemaStore support if you want to use
+        -- this plugin and its advanced options like `ignore`.
+        enable = false,
+        -- Avoid TypeError: Cannot read properties of undefined (reading 'length')
+        url = "",
+      },
+      schemas = require('schemastore').yaml.schemas(),
+    },
+  },
+}
 
 -- Format before save
 vim.api.nvim_create_augroup('AutoFormatting', {})
@@ -371,3 +425,8 @@ cmp.setup {
     { name = 'luasnip' },
   },
 }
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "sql",
+	command = "setlocal noexpandtab tabstop=4"
+})
