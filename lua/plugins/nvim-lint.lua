@@ -9,23 +9,21 @@ return {
         'c',
         'cpp',
         'gitcommit',
-        'markdown',
+        --'markdown',
         'yaml',
-        'python',
-        'rust'
+        'python'
     },
     opts = {
         events = { "BufWritePost", "BufReadPost", "InsertLeave" },
         linters_by_ft = {
             bash = { 'bash' },
             c = { 'vale' }, -- Build vale from https://github.com/errata-ai/vale
-            cpp = { 'cpplint', 'vale' },  -- `pipx install cpplint`
+            cpp = { 'cpplint' },  -- `pipx install cpplint`
             gitcommit = { 'gitlint' },  -- `pipx install --include-deps gitlint`
-            markdown = { 'mdl', 'vale' }, -- `cabal install MarkdownLint`
+            --markdown = { 'mdl', 'vale' }, -- `cabal install MarkdownLint`
             sh = { 'shellcheck' },  -- `cabal update; cabal install --installdir=${HOME}/.local/bin ShellCheck`
             yaml = { 'yamllint' },  -- `pipx install yamllint`
-            python = { 'pylint', 'vale' },  -- `pipx install pylint`
-            rust = { 'clippy' },
+            python = { 'pylint' },  -- `pipx install pylint`
             zsh = { 'shellcheck', 'zsh' }
         },
         linters =  {

@@ -1,11 +1,25 @@
 return {
     'neovim/nvim-lspconfig',
     events = 'LazyFile',
-    ft = { 'c', 'cpp', 'rust' },
+    ft = { 'c', 'cpp', 'rust', 'typescript', 'go' },
+    opts = {
+      inlay_hints = {enabled = true},
+    },
     config = function()
         local lspconfig = require('lspconfig')
         local default_parallelism = vim.uv.available_parallelism()
-
+        lspconfig.basedpyright.setup({
+          settings = {
+            basedpyright = {
+              analysis = {
+                diagnosticMode = "openFilesOnly",
+                inlayHints = {
+                  callArgumentNames = true
+                }
+              }
+            }
+          }
+        })
         lspconfig.clangd.setup({
             cmd = {
                 'clangd',
@@ -13,28 +27,6 @@ return {
                 '-j', math.max(1, default_parallelism / 2),
                 '--limit-results=20000',
                 '--limit-references=20000'
-            }
-        })
-        lspconfig.rust_analyzer.setup({
-            on_attach = require("lsp-format").on_attach,
-            settings = {
-                ['rust-analyzer'] = {
-                    cargo = {
-                        buildscripts = {
-                            enable = true,
-                        },
-                        procMacro = {
-                            enable = true,
-                        },
-                    },
-                    diagnostics = {
-                        enabled = true,
-                        refreshSupport = true,
-                    },
-                    check = {
-                        command = "clippy",
-                    },
-                },
             }
         })
         lspconfig.gopls.setup {

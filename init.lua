@@ -1,4 +1,5 @@
 -- plugins
+vim.g.mapleader = ","
 require('config.lazy')
 
 -- security
@@ -22,6 +23,11 @@ vim.api.nvim_create_autocmd("FileType", {
 
 vim.api.nvim_create_autocmd("FileType", {
 	pattern = "proto",
+	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
+})
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "json",
 	command = "setlocal softtabstop=2 shiftwidth=2 tabstop=2"
 })
 
@@ -143,4 +149,11 @@ vim.api.nvim_create_autocmd(
             vim.opt_local.filetype = 'kconfig'
         end
     }
+)
+
+vim.keymap.set({ 'n', 'v' }, '<space>f', 
+  function()
+      vim.lsp.buf.format { async = true }
+  end, 
+  {desc='[lsp] format buffer'}
 )
